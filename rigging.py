@@ -810,7 +810,7 @@ def has_correct_driver_connected(node: GeometryNode, props: PrecisionGearsProps)
 def _create_rig_tree(host: Object) -> GeometryNodeTree:
     logger.debug(f"Creating new rig tree on {host}")
     tree = bpy.data.node_groups.new(host.name, "GeometryNodeTree")
-    tree.nodes.new("NodeGroupOutput")
+    tree.nodes.new("NodeGroupOutput").name = "Group Output"
     if bpy.app.version[0] < 4:
         tree.outputs.new("NodeSocketGeometry", "Geometry")
     else:
@@ -826,6 +826,29 @@ def join_and_output_nodes(nodes):
     tree = nodes[0].id_data
     output_node = tree.nodes.get("Group Output")
     merge_node = tree.nodes.new("GeometryNodeJoinGeometry")
+
+    # with open("C:/Users/VectorASD/AppData/Roaming/Blender Foundation/Blender/4.5/scripts/addons/Precision Gears/log.txt", "a") as file:
+    #     file.write(f"~~~\nnodes: {nodes}\ntree: {tree}\noutput_node: {output_node}\nmerge_node: {merge_node}\n")
+    # bpy.save = nodes, tree, output_node, merge_node
+
+    # nodes       = [bpy.data.node_groups['Spur Gear_rig'].nodes["ROOT_DRIVER"]],
+    # tree        = bpy.data.node_groups['Spur Gear_rig']
+    # output_node = None                                                               WARNING! WARNING! WARNING!
+    # merge_node  = bpy.data.node_groups['Spur Gear_rig'].nodes["Соединить геометрию"]
+
+    """
+>>> tree = bpy.data.node_groups['Spur Gear_rig'] # bpy.save[1]
+>>> print(*tree.nodes, sep="\n")
+<bpy_struct, NodeGroupOutput("Выходы группы") at 0x0000028040D0D188>
+<bpy_struct, GeometryNodeGroup("ROOT_DRIVER") at 0x0000028040D0D788>
+<bpy_struct, GeometryNodeGroup("GEAR_STATE_CONTROL") at 0x0000028040D0DA88>
+<bpy_struct, GeometryNodeJoinGeometry("Соединить геометрию") at 0x0000028040D0F708>
+
+>>> tree.nodes.get("Group Output")
+>>> tree.nodes.get("Выходы группы")
+bpy.data.node_groups['Spur Gear_rig'].nodes["Выходы группы"]
+    """
+
     max_x = -999
     for node in nodes:
         max_x = max(node.location.x, max_x)
